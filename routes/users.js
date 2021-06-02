@@ -49,7 +49,12 @@ router.post('/register', (req, res) => {
             newUser
               .save()
               .then(user => {
-                res.send({Response: "Successfully Registered", user});
+                const user1 = {
+                  _id: user._id,
+                  name: user.name,
+                  email: user.email
+                }
+                res.send({Response: "Successfully Registered", user1});
               })
               .catch(err => console.log(err));
           });

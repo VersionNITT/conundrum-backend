@@ -4,20 +4,10 @@ const bcrypt = require("bcryptjs");
 const passport = require("passport");
 // Load User model
 const User = require("../models/User");
-const { forwardAuthenticated } = require("../config/auth");
-
-// Login Page
-router.get("/login", forwardAuthenticated, (req, res) =>
-	res.send({ Response: "Please Login with credentials" })
-);
-
-// Register Page
-router.get("/register", forwardAuthenticated, (req, res) =>
-	res.send({ Response: "Please register with credentials" })
-);
 
 // Register
 router.post("/register", (req, res) => {
+	console.log(req.body);
 	const { name, email, password, password2 } = req.body;
 	let errors = [];
 
@@ -70,6 +60,7 @@ router.post("/register", (req, res) => {
 
 // Login
 router.post("/login", (req, res, next) => {
+	console.log(req.body);
 	passport.authenticate("local")(req, res, next);
 });
 

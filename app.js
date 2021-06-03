@@ -19,6 +19,7 @@ mongoose
 	.catch((err) => console.log(err));
 
 // Express body parser
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Express session

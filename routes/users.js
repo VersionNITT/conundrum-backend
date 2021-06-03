@@ -60,8 +60,20 @@ router.post("/register", (req, res) => {
 
 // Login
 router.post("/login", (req, res, next) => {
-	console.log(req.body);
-	passport.authenticate("local")(req, res, next);
+	if (req.session) {
+		if (req.session.count) {
+			req.session.count++;
+		} else {
+			req.session.count = 1;
+		}
+
+		console.log(req.session.count);
+	}
+
+	passport.authenticate("local", {
+		successRedirect: "/dashboard",
+		failureRedirect: "/users/login",
+	})(req, res, next);
 });
 
 // Logout

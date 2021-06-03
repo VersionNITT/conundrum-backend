@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const session = require("express-session");
-
+const MongoStore = require("connect-mongo");
 const app = express();
 
 // Passport Config
@@ -14,7 +14,10 @@ const db = process.env.MONGOURI;
 
 // Connect to MongoDB
 mongoose
-	.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
+	.connect(db, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+	})
 	.then(() => console.log("MongoDB Connected"))
 	.catch((err) => console.log(err));
 
@@ -28,6 +31,13 @@ app.use(
 		secret: process.env.SECRET,
 		resave: true,
 		saveUninitialized: true,
+		cookie: {
+			maxAge: new Date(Date.now() + 10800 * 1000),
+		},
+		store: MongoStore.create({
+			mongoUrl: process.env.MONGOURI,
+			collectionName: "sessions",
+		}),
 	})
 );
 

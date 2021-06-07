@@ -7,7 +7,6 @@ const User = require("../models/User");
 
 // Register
 router.post("/register", (req, res) => {
-	console.log(req.body);
 	const { name, email, password, password2 } = req.body;
 	let errors = [];
 

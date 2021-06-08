@@ -1,5 +1,3 @@
-# Visit http://localhost:5000
-```
 
 ### MongoDB
 

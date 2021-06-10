@@ -11,23 +11,28 @@ router.get("/list", ensureAuthenticated, (req, res) => {
 });
 
 router.post("/question", ensureAuthenticated, (req, res) => {
-	const { id, ans } = req.body;
+	const { nextId, prvsId, ans } = req.body;
 
 	//Check answer if null than give the first question as reponse
 
-	if (!ans) {
-		Question.findOne({}, (err, question) => {
+	if (!ans && nextId && !prvsId) {
+		Question.findById(nextId, (err, question) => {
 			if (err) console.log(err);
 			res.json(question);
 		});
 	} else {
 		//Check answer
-		if (false) {
-			Question.findById(id, "description title", (err, question) => {
-				if (err) console.log(err);
-				res.json(question);
-			});
-		}
+		Question.findById(prvsId, (err, question) => {
+			if (err) console.log(err);
+			if (question.validateAnswer(ans)) {
+				Question.findById(nextId, "description title", (err, question) => {
+					if (err) console.log(err);
+					res.json(question);
+				});
+			} else {
+				res.send(false);
+			}
+		});
 	}
 });
 

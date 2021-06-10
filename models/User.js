@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Schema.ObjectId;
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -16,6 +17,16 @@ const UserSchema = new mongoose.Schema({
 	date: {
 		type: Date,
 		default: Date.now,
+	},
+	score: {
+		questions: [
+			{
+				id: ObjectId,
+				tries: Number,
+				hintTaken: Boolean,
+			},
+		],
+		required: false,
 	},
 });
 

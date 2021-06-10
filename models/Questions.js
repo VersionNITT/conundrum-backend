@@ -38,8 +38,8 @@ QuestionSchema.pre("save", async function save(next) {
 	}
 });
 
-QuestionSchema.methods.validateAnswer = async function validateAnswer(data) {
-	return bcrypt.compare(data, this.answer);
+QuestionSchema.methods.validateAnswer = function validateAnswer(data) {
+	return bcrypt.compareSync(data, this.answer);
 };
 
 const Questions = mongoose.model("Questions", QuestionSchema);

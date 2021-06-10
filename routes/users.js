@@ -60,13 +60,11 @@ router.post("/register", (req, res) => {
 // Login
 router.post("/login", (req, res, next) => {
 	if (req.session) {
-		if (req.session.count) {
-			req.session.count++;
-		} else {
-			req.session.count = 1;
+		if (!req.session.completed) {
+			req.session.completed = 0;
 		}
 
-		console.log(req.session.count);
+		console.log(req.session.completed);
 	}
 
 	passport.authenticate("local", {
@@ -78,6 +76,7 @@ router.post("/login", (req, res, next) => {
 // Logout
 router.get("/logout", (req, res) => {
 	req.logout();
+	req.session = null;
 	res.send({ Response: "Successfully Logged out" });
 });
 

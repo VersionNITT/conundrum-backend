@@ -33,8 +33,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
 	session({
 		secret: process.env.SECRET,
-		resave: true,
 		saveUninitialized: true,
+		unset: "destroy",
 		cookie: {
 			maxAge: new Date(Date.now() + 10800 * 1000),
 		},

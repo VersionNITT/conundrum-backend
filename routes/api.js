@@ -18,6 +18,8 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 	if (!ans && nextId && !prvsId) {
 		Question.findById(nextId, (err, question) => {
 			if (err) console.log(err);
+			req.session.currentQuestion = nextId;
+			console.log(req.session);
 			res.json(question);
 		});
 	} else {
@@ -27,6 +29,7 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 			if (question.validateAnswer(ans)) {
 				Question.findById(nextId, "description title", (err, question) => {
 					if (err) console.log(err);
+					req.session.currentQuestion = nextId;
 					res.json(question);
 				});
 			} else {

@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
 		],
 		required: false,
 	},
+	hintkey: {
+		id: ObjectId,
+		type: String,
+	},
 });
 
 const User = mongoose.model("User", UserSchema);

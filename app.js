@@ -42,6 +42,7 @@ app.use(
 			mongoUrl: process.env.MONGOURI,
 			collectionName: "sessions",
 		}),
+		resave: true,
 	})
 );
 

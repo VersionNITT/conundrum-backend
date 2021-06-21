@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { ensureAuthenticated } = require("../config/auth");
 const Question = require("../models/Questions");
+const User = require("../models/User");
 
 router.get("/list", ensureAuthenticated, (req, res) => {
 	Question.find({}, "category title score", (err, questions) => {
@@ -37,6 +38,21 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 			}
 		});
 	}
+});
+
+router.post("/setKey", ensureAuthenticated, (req, res) => {
+	const { id, key } = req.body;
+	const userId = req.session.passport.user;
+
+	User.findById(userId, (err, user) => {
+		if (err) res.sendStatus(401);
+		user.hintKey = {
+			id,
+			key,
+		};
+		user.save();
+		res.json({ key });
+	});
 });
 
 module.exports = router;

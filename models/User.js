@@ -29,7 +29,6 @@ const UserSchema = new mongoose.Schema({
 		required: false,
 	},
 	hintkey: {
-		id: ObjectId,
 		type: String,
 	},
 });

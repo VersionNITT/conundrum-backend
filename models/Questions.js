@@ -29,13 +29,24 @@ const QuestionSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	puzzle: {
+		type: String,
+		required: true,
+	},
+	puzzleAns: {
+		type: String,
+		required: true,
+	},
 });
 
 QuestionSchema.pre("save", async function save(next) {
-	if (!this.isModified("answer")) return next();
+	if (!this.isModified("answer") && !this.isModified("puzzleAns"))
+		return next();
 	try {
 		const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
 		this.answer = await bcrypt.hash(this.answer, salt);
+		this.puzzleAns = await bcrypt.hash(this.puzzleAns, salt);
+
 		return next();
 	} catch (err) {
 		return next(err);
@@ -43,7 +54,13 @@ QuestionSchema.pre("save", async function save(next) {
 });
 
 QuestionSchema.methods.validateAnswer = function validateAnswer(data) {
+	data = data.toLowerCase();
 	return bcrypt.compareSync(data, this.answer);
+};
+
+QuestionSchema.methods.validatePuzzleAnswer = function validateAnswer(data) {
+	data = data.toLowerCase();
+	return bcrypt.compareSync(data, this.puzzleAns);
 };
 
 const Questions = mongoose.model("Questions", QuestionSchema);

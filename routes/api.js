@@ -6,7 +6,7 @@ const User = require("../models/User");
 const { validate: uuidValidate } = require("uuid");
 
 router.get("/list", ensureAuthenticated, (req, res) => {
-	Question.find({}, "category title score", (err, questions) => {
+	Question.find({}, "category title score puzzle", (err, questions) => {
 		if (err) console.log(err);
 		console.log(questions);
 		res.json(questions);
@@ -89,6 +89,20 @@ router.post("/getHint", ensureAuthenticated, (req, res) => {
 			}
 		}
 	);
+});
+router.post("/checkPuzzle", ensureAuthenticated, (req, res) => {
+	const { id, ans } = req.body;
+	console.log(id, ans);
+	Question.findById(id, (err, question) => {
+		if (err) res.sendStatus(500);
+		else {
+			if (question.validatePuzzleAnswer(ans)) {
+				res.json({ status: true });
+			} else {
+				res.json({ status: false });
+			}
+		}
+	});
 });
 
 module.exports = router;

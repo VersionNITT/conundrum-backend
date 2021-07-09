@@ -22,8 +22,8 @@ const UserSchema = new mongoose.Schema({
 		questions: [
 			{
 				id: ObjectId,
-				tries: Number,
 				hintTaken: Boolean,
+				score: Number,
 			},
 		],
 		required: false,

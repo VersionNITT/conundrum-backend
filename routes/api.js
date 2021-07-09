@@ -28,12 +28,41 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 	} else {
 		//Check answer
 		Question.findById(prvsId, (err, question) => {
-			if (err) console.log(err);
+			if (err) res.sendStatus(401);
+
 			if (question.validateAnswer(ans)) {
-				Question.findById(nextId, "description title", (err, question) => {
-					if (err) console.log(err);
-					req.session.currentQuestion = nextId;
-					res.json(question);
+				const userId = req.session.passport.user;
+				User.findById(userId, (err, user) => {
+					if (err) res.sendStatus(401);
+					let score = question.score;
+
+					//Checking for if hint was taken
+					const questionHistory = user.score.questions.find((q) => {
+						console.log(q.id, prvsId);
+						return q.id == prvsId;
+					});
+					console.log(questionHistory);
+
+					//If taken then deduct score
+					if (questionHistory) {
+						score = questionHistory.hintTaken ? score * 0.9 : score;
+						questionHistory.score = score;
+					} else {
+						//Else create a new entry for the question attempted
+						user.score.questions.push({
+							id: prvsId,
+							hintTaken: false,
+							score,
+						});
+					}
+					user.save((err) => {
+						if (err) res.sendStatus(401);
+						Question.findById(nextId, "description title", (err, question) => {
+							if (err) res.sendStatus(401);
+							req.session.currentQuestion = nextId;
+							res.json(question);
+						});
+					});
 				});
 			} else {
 				res.send(false);
@@ -83,7 +112,11 @@ router.post("/getHint", ensureAuthenticated, (req, res) => {
 				Question.findById(qid, (err, question) => {
 					if (err) res.sendStatus(401);
 					else if (question) {
-						res.json({ hint: question.hint });
+						user.score.questions.push({ id: qid, hintTaken: true });
+						user.save((err, user) => {
+							if (err) res.sendStatus(401);
+							res.json({ hint: question.hint });
+						});
 					}
 				});
 			}

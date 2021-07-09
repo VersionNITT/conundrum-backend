@@ -57,22 +57,6 @@ router.post("/register", (req, res) => {
 	}
 });
 
-// Login
-// router.post("/login", (req, res, next) => {
-// 	if (req.session) {
-// 		if (!req.session.completed) {
-// 			req.session.completed = 0;
-// 		}
-
-// 		console.log(req.session.completed);
-// 	}
-
-// 	passport.authenticate("local", {
-// 		successRedirect: "/dashboard",
-// 		failureRedirect: "/users/login",
-// 	})(req, res, next);
-// });
-
 router.post("/login", (req, res, next) => {
 	passport.authenticate("local", function (err, user, info) {
 		if (err) {

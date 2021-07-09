@@ -51,10 +51,29 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
+
 app.use("/", require("./routes/index.js"));
-app.use("/users", require("./routes/users.js"));
-app.use("/api", require("./routes/api"));
+app.use("/users", eventStarted, require("./routes/users.js"));
+app.use("/api", eventStarted, require("./routes/api"));
 
 const PORT = process.env.PORT || 4080;
 
 app.listen(PORT, console.log(`Server running on  ${PORT}`));
+
+function eventStarted(req, res, next) {
+	if (process.env.startTime && process.env.endTime) {
+		const currentTime = Date.now();
+		if (
+			currentTime < process.env.startTime ||
+			currentTime > process.env.endTime
+		) {
+			res.status(403).json({ error: "Event has not yet started" });
+		} else {
+			next();
+		}
+	} else {
+		res.status(403).json({ error: "Event has not yet started" });
+	}
+}
+
+module.exports = app;

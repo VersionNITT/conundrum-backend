@@ -58,26 +58,63 @@ router.post("/register", (req, res) => {
 });
 
 // Login
+// router.post("/login", (req, res, next) => {
+// 	if (req.session) {
+// 		if (!req.session.completed) {
+// 			req.session.completed = 0;
+// 		}
+
+// 		console.log(req.session.completed);
+// 	}
+
+// 	passport.authenticate("local", {
+// 		successRedirect: "/dashboard",
+// 		failureRedirect: "/users/login",
+// 	})(req, res, next);
+// });
+
 router.post("/login", (req, res, next) => {
-	if (req.session) {
-		if (!req.session.completed) {
-			req.session.completed = 0;
+	passport.authenticate("local", function (err, user, info) {
+		if (err) {
+			return next(err);
 		}
+		if (!user) {
+			return res.status(401);
+		}
+		req.logIn(user, function (err) {
+			if (err) {
+				return next(err);
+			}
 
-		console.log(req.session.completed);
-	}
+			if (user.lastSession.totalScore !== undefined) {
+				req.session.score = user.lastSession.totalScore;
+				req.session.currentQuestion = user.lastSession.currentQuestion;
+			} else {
+				req.session.score = 0;
+			}
 
-	passport.authenticate("local", {
-		successRedirect: "/dashboard",
-		failureRedirect: "/users/login",
+			return res.redirect("/dashboard");
+		});
 	})(req, res, next);
 });
 
 // Logout
 router.get("/logout", (req, res) => {
-	req.logout();
-	req.session = null;
-	res.send({ Response: "Successfully Logged out" });
+	if (req.session.passport) {
+		User.findById(req.session.passport.user).then((user) => {
+			if (user) {
+				user.lastSession = {
+					totalScore: req.session.score,
+					currentQuestion: req.session.currentQuestion,
+				};
+				user.save();
+				req.logout();
+				req.session.destroy(function (err) {
+					res.send({ Response: "Successfully Logged out" });
+				});
+			}
+		});
+	}
 });
 
 module.exports = router;

@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
 		],
 		required: false,
 	},
+	lastSession: {
+		currentQuestion: ObjectId,
+		totalScore: Number,
+	},
 	hintkey: {
 		type: String,
 	},

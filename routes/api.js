@@ -7,8 +7,7 @@ const { validate: uuidValidate } = require("uuid");
 
 router.get("/list", ensureAuthenticated, (req, res) => {
 	Question.find({}, "category title score puzzle", (err, questions) => {
-		if (err) console.log(err);
-		console.log(questions);
+		if (err) res.sendStatus(401);
 		res.json(questions);
 	});
 });
@@ -20,10 +19,9 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 
 	if (!ans && nextId && !prvsId) {
 		Question.findById(nextId, (err, question) => {
-			if (err) console.log(err);
+			if (err) res.sendStatus(401);
 			req.session.currentQuestion = nextId;
-			console.log(req.session);
-			res.json(question);
+			res.json({ question, score: req.session.score });
 		});
 	} else {
 		//Check answer
@@ -38,10 +36,8 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 
 					//Checking for if hint was taken
 					const questionHistory = user.score.questions.find((q) => {
-						console.log(q.id, prvsId);
 						return q.id == prvsId;
 					});
-					console.log(questionHistory);
 
 					//If taken then deduct score
 					if (questionHistory) {
@@ -57,10 +53,13 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 					}
 					user.save((err) => {
 						if (err) res.sendStatus(401);
+
+						//Updating total score on session
+						req.session.score += score;
 						Question.findById(nextId, "description title", (err, question) => {
 							if (err) res.sendStatus(401);
 							req.session.currentQuestion = nextId;
-							res.json(question);
+							res.json({ question, score: req.session.score });
 						});
 					});
 				});
@@ -112,7 +111,7 @@ router.post("/getHint", ensureAuthenticated, (req, res) => {
 				Question.findById(qid, (err, question) => {
 					if (err) res.sendStatus(401);
 					else if (question) {
-						user.score.questions.push({ id: qid, hintTaken: true });
+						user.score.questions.push({ id: qid, hintTaken: true, score: 0 });
 						user.save((err, user) => {
 							if (err) res.sendStatus(401);
 							res.json({ hint: question.hint });
@@ -125,7 +124,6 @@ router.post("/getHint", ensureAuthenticated, (req, res) => {
 });
 router.post("/checkPuzzle", ensureAuthenticated, (req, res) => {
 	const { id, ans } = req.body;
-	console.log(id, ans);
 	Question.findById(id, (err, question) => {
 		if (err) res.sendStatus(500);
 		else {

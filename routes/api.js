@@ -5,6 +5,11 @@ const Question = require("../models/Questions");
 const User = require("../models/User");
 const { validate: uuidValidate } = require("uuid");
 
+router.get("/time", (req, res) => {
+	const time = process.env.endTime - Date.now();
+	res.json({ time });
+});
+
 router.get("/list", ensureAuthenticated, (req, res) => {
 	Question.find({}, "category title score puzzle", (err, questions) => {
 		if (err) res.sendStatus(401);

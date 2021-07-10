@@ -21,15 +21,19 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 	const { nextId, prvsId, ans } = req.body;
 
 	//Check answer if null than give the first question as reponse
-
 	if (!ans && nextId && !prvsId) {
-		Question.findById(nextId, (err, question) => {
-			if (err) res.sendStatus(401);
-			req.session.currentQuestion = nextId;
-			res.json({ question, score: req.session.score });
-		});
+		Question.findById(
+			nextId,
+			"description title category puzzle",
+			(err, question) => {
+				if (err) res.sendStatus(401);
+				req.session.currentQuestion = nextId;
+				res.json({ question, score: req.session.score });
+			}
+		);
 	} else {
 		//Check answer
+		qId = prvsId;
 		Question.findById(prvsId, (err, question) => {
 			if (err) res.sendStatus(401);
 
@@ -61,11 +65,15 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 
 						//Updating total score on session
 						req.session.score += score;
-						Question.findById(nextId, "description title", (err, question) => {
-							if (err) res.sendStatus(401);
-							req.session.currentQuestion = nextId;
-							res.json({ question, score: req.session.score });
-						});
+						Question.findById(
+							nextId,
+							"description title category puzzle",
+							(err, question) => {
+								if (err) res.sendStatus(401);
+								req.session.currentQuestion = nextId;
+								res.json({ question, score: req.session.score });
+							}
+						);
 					});
 				});
 			} else {

@@ -31,11 +31,11 @@ const QuestionSchema = new mongoose.Schema({
 	},
 	puzzle: {
 		type: String,
-		required: true,
+		required: false,
 	},
 	puzzleAns: {
 		type: String,
-		required: true,
+		required: false,
 	},
 });
 

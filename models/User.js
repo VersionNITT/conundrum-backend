@@ -35,6 +35,9 @@ const UserSchema = new mongoose.Schema({
 	hintkey: {
 		type: String,
 	},
+	completed: {
+		type: Boolean,
+	},
 });
 
 const User = mongoose.model("User", UserSchema);

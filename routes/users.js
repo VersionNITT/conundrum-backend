@@ -57,17 +57,18 @@ router.post("/register", (req, res) => {
 	}
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/login", eventStarted, (req, res, next) => {
+	console.log(req.body);
 	passport.authenticate("local", function (err, user, info) {
 		if (err) {
-			return next(err);
+			return res.status(401).send(err);
 		}
 		if (!user) {
-			return res.status(401);
+			return res.status(401).send(err);
 		}
 		req.logIn(user, function (err) {
 			if (err) {
-				return next(err);
+				return res.status(401).send(err);
 			}
 
 			if (user.lastSession.totalScore !== undefined) {
@@ -83,7 +84,7 @@ router.post("/login", (req, res, next) => {
 });
 
 // Logout
-router.get("/logout", (req, res) => {
+router.get("/logout", eventStarted, (req, res) => {
 	if (req.session.passport) {
 		User.findById(req.session.passport.user).then((user) => {
 			if (user) {
@@ -100,5 +101,21 @@ router.get("/logout", (req, res) => {
 		});
 	}
 });
+
+function eventStarted(req, res, next) {
+	if (process.env.startTime && process.env.endTime) {
+		const currentTime = Date.now();
+		if (
+			currentTime < process.env.startTime ||
+			currentTime > process.env.endTime
+		) {
+			res.status(403).json({ error: "Event has not yet started" });
+		} else {
+			next();
+		}
+	} else {
+		res.status(403).json({ error: "Event has not yet started" });
+	}
+}
 
 module.exports = router;

@@ -53,7 +53,7 @@ app.use(passport.session());
 // Routes
 
 app.use("/", require("./routes/index.js"));
-app.use("/users", eventStarted, require("./routes/users.js"));
+app.use("/users", require("./routes/users.js"));
 app.use("/api", eventStarted, require("./routes/api"));
 
 const PORT = process.env.PORT || 4080;

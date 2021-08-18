@@ -14,6 +14,9 @@ module.exports = function (passport) {
 				if (!user) {
 					return done(null, false, { message: "That email is not registered" });
 				}
+				if (user.completed) {
+					return done(null, false, { message: "You have already submitted!" });
+				}
 
 				// Match password
 				bcrypt.compare(password, user.password, (err, isMatch) => {

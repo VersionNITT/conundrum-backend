@@ -5,6 +5,7 @@ const passport = require("passport");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const app = express();
+const path = require("path");
 const init = require("./init");
 
 // Passport Config
@@ -28,6 +29,7 @@ mongoose
 // Express body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.resolve(__dirname, "public/build")));
 
 // Express session
 app.use(
@@ -51,8 +53,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
+app.get("/", (req, res) => {
+	res.sendFile(path.resolve("public/build/index.html"));
+});
 
-app.use("/", require("./routes/index.js"));
+app.use("/setup", require("./routes/index.js"));
 app.use("/users", require("./routes/users.js"));
 app.use("/api", eventStarted, require("./routes/api"));
 

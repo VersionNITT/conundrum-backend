@@ -78,7 +78,7 @@ router.post("/login", eventStarted, (req, res, next) => {
 				req.session.score = 0;
 			}
 
-			return res.redirect("/dashboard");
+			return res.redirect("/setup/dashboard");
 		});
 	})(req, res, next);
 });

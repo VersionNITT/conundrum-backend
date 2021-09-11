@@ -149,4 +149,17 @@ router.post("/checkPuzzle", ensureAuthenticated, (req, res) => {
 	});
 });
 
+router.get("/endContest", ensureAuthenticated, (req, res) => {
+	const userId = req.session.passport.user;
+	User.findById(userId, (err, user) => {
+		if (err) res.sendStatus(401);
+		else {
+			user.done = true;
+			user.save((err) => {
+				if (err) res.sendStatus(401);
+				res.sendStatus(200);
+			});
+		}
+	});
+});
 module.exports = router;

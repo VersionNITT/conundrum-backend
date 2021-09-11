@@ -38,6 +38,11 @@ const UserSchema = new mongoose.Schema({
 	completed: {
 		type: Boolean,
 	},
+	done: {
+		type: Boolean,
+		default: false,
+		required: true,
+	},
 });
 
 const User = mongoose.model("User", UserSchema);

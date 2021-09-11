@@ -58,13 +58,15 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", eventStarted, (req, res, next) => {
-	console.log(req.body);
 	passport.authenticate("local", function (err, user, info) {
 		if (err) {
 			return res.status(401).send(err);
 		}
 		if (!user) {
 			return res.status(401).send(err);
+		}
+		if (user.done) {
+			return res.send({ Response: "You already submitted your response!" });
 		}
 		req.logIn(user, function (err) {
 			if (err) {

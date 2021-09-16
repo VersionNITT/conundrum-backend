@@ -5,19 +5,19 @@ const Question = require("../models/Questions");
 const User = require("../models/User");
 const { validate: uuidValidate } = require("uuid");
 
-router.get("/time", (req, res) => {
+router.get("/time",[ensureAuthenticated, eventStarted], (req, res) => {
 	const time = process.env.endTime - Date.now();
 	res.json({ time });
 });
 
-router.get("/list", ensureAuthenticated, (req, res) => {
+router.get("/list",[ensureAuthenticated, eventStarted], (req, res) => {
 	Question.find({}, "category title score puzzle", (err, questions) => {
 		if (err) res.sendStatus(401);
 		res.json(questions);
 	});
 });
 
-router.post("/question", ensureAuthenticated, (req, res) => {
+router.post("/question", [ensureAuthenticated, eventStarted], (req, res) => {
 	const { nextId, prvsId, ans } = req.body;
 
 	//Check answer if null than give the first question as reponse
@@ -83,7 +83,7 @@ router.post("/question", ensureAuthenticated, (req, res) => {
 	}
 });
 
-router.post("/setKey", ensureAuthenticated, (req, res) => {
+router.post("/setKey", [ensureAuthenticated, eventStarted], (req, res) => {
 	const { key } = req.body;
 	const userId = req.session.passport.user;
 	if (!uuidValidate(key)) res.sendStatus(401);
@@ -106,7 +106,7 @@ router.post("/setKey", ensureAuthenticated, (req, res) => {
 	}
 });
 
-router.post("/getHint", ensureAuthenticated, (req, res) => {
+router.post("/getHint", [ensureAuthenticated, eventStarted], (req, res) => {
 	const { key } = req.body;
 	const userId = req.session.passport.user;
 	const qid = req.session.currentQuestion;
@@ -135,7 +135,7 @@ router.post("/getHint", ensureAuthenticated, (req, res) => {
 		}
 	);
 });
-router.post("/checkPuzzle", ensureAuthenticated, (req, res) => {
+router.post("/checkPuzzle", [ensureAuthenticated, eventStarted], (req, res) => {
 	const { id, ans } = req.body;
 	Question.findById(id, (err, question) => {
 		if (err) res.sendStatus(500);
@@ -162,4 +162,20 @@ router.get("/endContest", ensureAuthenticated, (req, res) => {
 		}
 	});
 });
+
+function eventStarted(req, res, next) {
+	if (process.env.startTime && process.env.endTime) {
+		const currentTime = Date.now();
+		if (
+			currentTime < process.env.startTime ||
+			currentTime > process.env.endTime
+		) {
+			res.status(403).json({ error: "Event has not yet started" });
+		} else {
+			next();
+		}
+	} else {
+		res.status(403).json({ error: "Event has not yet started" });
+	}
+}
 module.exports = router;

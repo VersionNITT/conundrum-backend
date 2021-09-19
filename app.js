@@ -65,29 +65,31 @@ app.get("/", (req, res) => {
 app.use("/setup", require("./routes/index.js"));
 app.use("/users", require("./routes/users.js"));
 app.use("/api", require("./routes/api"));
+app.use("/admin", require("./routes/admin"));
 
 const PORT = process.env.PORT || 4080;
 
 app.listen(PORT, () => {
-  rl.question("Enter Event Secret: ", function (secret) {
-    rl.question("Enter Event duration in minutes: ? ", function (min) {
-      const duration = min * 60 * 1000;
-      if (secret === process.env.STARTSECRET) {
-        const startTime = Date.now();
-        const endTime = startTime + duration;
-        process.env.startTime = startTime;
-        process.env.endTime = endTime;
+  console.log(`Listening on port ${PORT}`);
+  // rl.question("Enter Event Secret: ", function (secret) {
+  //   rl.question("Enter Event duration in minutes: ? ", function (min) {
+  //     const duration = min * 60 * 1000;
+  //     if (secret === process.env.STARTSECRET) {
+  //       const startTime = Date.now();
+  //       const endTime = startTime + duration;
+  //       process.env.startTime = startTime;
+  //       process.env.endTime = endTime;
 
-        console.log("Event started");
-        console.log(`Start time: ${startTime}`);
-        console.log(`End time: ${endTime}`);
-        console.log(`Duration: ${duration}`);
+  //       console.log("Event started");
+  //       console.log(`Start time: ${startTime}`);
+  //       console.log(`End time: ${endTime}`);
+  //       console.log(`Duration: ${duration}`);
 
-        console.log(`Server running on  ${PORT}`);
-      }
-      rl.close();
-    });
-  });
+  //       console.log(`Server running on  ${PORT}`);
+  //     }
+  //     rl.close();
+  //   });
+  // });
 });
 
 module.exports = app;

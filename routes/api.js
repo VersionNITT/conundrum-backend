@@ -64,15 +64,19 @@ router.post("/question", [ensureAuthenticated, eventStarted], (req, res) => {
 
             //Updating total score on session
             req.session.score += score;
-            Question.findById(
-              nextId,
-              "description title category puzzle",
-              (err, question) => {
-                if (err) res.sendStatus(401);
-                req.session.currentQuestion = nextId;
-                res.json({ question, score: req.session.score });
-              }
-            );
+            if (nextId !== -1) {
+              Question.findById(
+                nextId,
+                "description title category puzzle",
+                (err, question) => {
+                  if (err) res.sendStatus(401);
+                  req.session.currentQuestion = nextId;
+                  res.json({ question, score: req.session.score });
+                }
+              );
+            } else {
+              res.json({ score: req.session.score });
+            }
           });
         });
       } else {

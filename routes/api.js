@@ -157,7 +157,7 @@ router.get("/endContest", ensureAuthenticated, (req, res) => {
   User.findById(userId, (err, user) => {
     if (err) res.sendStatus(401);
     else {
-      user.done = true;
+      user.done = Date.now() - process.env.startTime;
       user.save((err) => {
         if (err) res.sendStatus(401);
         res.sendStatus(200);

@@ -11,10 +11,15 @@ router.get("/time", [ensureAuthenticated, eventStarted], (req, res) => {
 });
 
 router.get("/list", [ensureAuthenticated, eventStarted], (req, res) => {
-  Question.find({}, "category title score puzzle", (err, questions) => {
-    if (err) res.sendStatus(401);
-    res.json(questions);
-  });
+  Question.find(
+    {},
+    "category title score puzzle",
+    { sort: { score: 1 } },
+    (err, questions) => {
+      if (err) res.sendStatus(401);
+      res.json(questions);
+    }
+  );
 });
 
 router.post("/question", [ensureAuthenticated, eventStarted], (req, res) => {

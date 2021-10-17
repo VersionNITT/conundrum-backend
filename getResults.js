@@ -19,7 +19,11 @@ User.find({}, (err, users) => {
       (acc, q) => acc + q.score,
       0
     );
-    return { name: user.name, score: totalScore, done: user.done };
+    return {
+      name: user.name,
+      score: totalScore,
+      done: user.done === -1 ? 7200000 : user.done,
+    };
   });
 
   usersWithScore.sort((u1, u2) => {
@@ -29,9 +33,12 @@ User.find({}, (err, users) => {
     return u2.score - u1.score;
   });
 
+  console.log(`\nTotal Participants- ${usersWithScore.length}\n\n`);
   usersWithScore.forEach((user) => {
     console.log(
-      `Name: ${user.name} \t---\t Score: ${user.score} \t---\t Duration: ${user.done} ms`
+      `Name: ${user.name} \t---\t Score: ${
+        user.score
+      } \t---\t Duration: ${parseInt(user.done / 60000)} mins`
     );
   });
 });

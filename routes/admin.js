@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 
-router.get("/init", (req, res) => {
+router.get("/initconundrum21", (req, res) => {
   res.sendFile(path.resolve("public/build/initEvent.html"));
 });
 
